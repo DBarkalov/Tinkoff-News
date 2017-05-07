@@ -13,5 +13,5 @@ public interface INewsDetailView {
     void updateText(String id, NewsDetailEntity detailEntity);
     void showProgress(String id);
     void hideProgress(String id);
-    void showError(String id, String error);
+    void showError(String id, Exception error);
 }

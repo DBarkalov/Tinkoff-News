@@ -75,20 +75,18 @@ public class NewsListActivity extends AppCompatActivity implements INewsListView
     @Override
     public void hideProgress() {
         Log.d(TAG, "hideProgress()");
-        if(mSwipeRefreshLayout.isRefreshing()) {
-            mSwipeRefreshLayout.setRefreshing(false);
-        }
+        mSwipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
-    public void showError(String error) {
+    public void showError(Exception error) {
         Log.d(TAG, "showError " + error);
-        Toast.makeText(this, error, Toast.LENGTH_LONG).show();
+        Toast.makeText(this, error.getMessage(), Toast.LENGTH_LONG).show();
     }
 
     @Override
     public void onRefresh() {
-        mPresenter.onRefresh(true);
+        mPresenter.onRefresh();
     }
 
 

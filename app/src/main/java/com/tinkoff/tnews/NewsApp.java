@@ -2,6 +2,8 @@ package com.tinkoff.tnews;
 
 import android.app.Application;
 
+import com.tinkoff.tnews.model.NewsDetailModel;
+import com.tinkoff.tnews.model.NewsModel;
 import com.tinkoff.tnews.presenter.INewsDetailPresenter;
 import com.tinkoff.tnews.presenter.INewsListPresenter;
 import com.tinkoff.tnews.presenter.NewsDetailPresenter;
@@ -18,14 +20,14 @@ public class NewsApp extends Application {
 
     public INewsListPresenter getNewsPresenter() {
         if (mNewsPresenter == null) {
-            mNewsPresenter = new NewsListPresenter(this);
+            mNewsPresenter = new NewsListPresenter(this, new NewsModel());
         }
         return mNewsPresenter;
     }
 
     public INewsDetailPresenter getDetailPresenter() {
         if (mNewsDetailPresenter == null) {
-            mNewsDetailPresenter = new NewsDetailPresenter(this);
+            mNewsDetailPresenter = new NewsDetailPresenter(this, new NewsDetailModel());
         }
         return mNewsDetailPresenter;
     }

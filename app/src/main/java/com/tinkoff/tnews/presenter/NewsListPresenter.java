@@ -20,9 +20,9 @@ public class NewsListPresenter implements INewsListPresenter {
     private INewsListView mView;
     private final Context mContext;
 
-    public NewsListPresenter(Context context) {
+    public NewsListPresenter(Context context, NewsModel model) {
         mContext = context;
-        mModel = new NewsModel();
+        mModel = model;
         mModel.setListener(new NewsModel.DataListener() {
             @Override
             public void onProgressUpdate(boolean progress) {
@@ -36,7 +36,7 @@ public class NewsListPresenter implements INewsListPresenter {
             }
 
             @Override
-            public void onError(String error) {
+            public void onError(Exception error) {
                 if (mView != null) {
                     mView.showError(error);
                 }
@@ -63,11 +63,15 @@ public class NewsListPresenter implements INewsListPresenter {
         } else {
             mView.hideProgress();
         }
-        onRefresh(false);
+        refresh(false);
     }
 
     @Override
-    public void onRefresh(boolean force) {
+    public void onRefresh() {
+        refresh(true);
+    }
+
+    private void refresh(boolean force) {
         if (!mModel.inProgress()) {
             if (force) {
                 startLoadNews(force);
@@ -92,9 +96,9 @@ public class NewsListPresenter implements INewsListPresenter {
         private final Context mContext;
         private final boolean mForce;
 
-        private LoadTask(Context mContext, boolean mForce) {
-            this.mContext = mContext;
-            this.mForce = mForce;
+        private LoadTask(Context context, boolean force) {
+            this.mContext = context;
+            this.mForce = force;
         }
 
         @Override
@@ -103,9 +107,9 @@ public class NewsListPresenter implements INewsListPresenter {
             NewsResult result = null;
             try {
                 List<NewsEntity> list = dataManager.getNewstList(mForce);
-                result = new NewsResult(null, list);
+                result = new NewsResult(list);
             } catch (Exception e) {
-                result = new NewsResult(e, null);
+                result = new NewsResult(e);
             }
             return result;
         }
@@ -126,8 +130,13 @@ public class NewsListPresenter implements INewsListPresenter {
     }
 
     private static class NewsResult extends Result<List<NewsEntity>> {
-        public NewsResult(Exception exception, List<NewsEntity> result) {
-            super(exception, result);
+
+        public NewsResult(List<NewsEntity> data) {
+            super(data);
+        }
+
+        public NewsResult(Exception e) {
+            super(e);
         }
     }
 }

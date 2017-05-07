@@ -9,5 +9,5 @@ import com.tinkoff.tnews.ui.INewsListView;
 public interface INewsListPresenter {
     void setView(INewsListView view);
     void onResume();
-    void onRefresh(boolean force);
+    void onRefresh();
 }

@@ -18,9 +18,9 @@ public class NewsDetailPresenter implements INewsDetailPresenter {
     private INewsDetailView mView;
     private final Context mContext;
 
-    public NewsDetailPresenter(Context context) {
+    public NewsDetailPresenter(Context context, NewsDetailModel model) {
         mContext = context;
-        mModel = new NewsDetailModel();
+        mModel = model;
         mModel.setListener(new NewsDetailModel.DataListener() {
             @Override
             public void onProgressUpdate(String id, boolean progress) {
@@ -34,7 +34,7 @@ public class NewsDetailPresenter implements INewsDetailPresenter {
             }
 
             @Override
-            public void onError(String id, String error) {
+            public void onError(String id, Exception error) {
                 if (mView != null) {
                     mView.showError(id, error);
                 }
@@ -61,11 +61,15 @@ public class NewsDetailPresenter implements INewsDetailPresenter {
         } else {
             mView.hideProgress(id);
         }
-        onRefresh(id, false);
+        refresh(id, false);
     }
 
     @Override
-    public void onRefresh(String id, boolean force) {
+    public void onRefresh(String id) {
+        refresh(id, true);
+    }
+
+    private void refresh(String id, boolean force) {
         if (!mModel.inProgress(id)) {
             if (force) {
                 startLoadNews(id, force);
@@ -77,8 +81,6 @@ public class NewsDetailPresenter implements INewsDetailPresenter {
                 }
             }
         }
-
-
     }
 
     private void startLoadNews(String id, boolean force) {
@@ -92,9 +94,9 @@ public class NewsDetailPresenter implements INewsDetailPresenter {
         private final boolean mForce;
         private final String mId;
 
-        private LoadTask(Context mContext, boolean mForce, String id) {
-            this.mContext = mContext;
-            this.mForce = mForce;
+        private LoadTask(Context context, boolean force, String id) {
+            this.mContext = context;
+            this.mForce = force;
             this.mId = id;
         }
 
@@ -104,9 +106,9 @@ public class NewsDetailPresenter implements INewsDetailPresenter {
             DetailResult result = null;
             try {
                 NewsDetailEntity entity = dataManager.getNewsDetail(mId, mForce);
-                result = new DetailResult(mId, null, entity);
+                result = new DetailResult(mId, entity);
             } catch (Exception e) {
-                result = new DetailResult(mId, e, null);
+                result = new DetailResult(mId, e);
             }
             return result;
         }
@@ -129,8 +131,13 @@ public class NewsDetailPresenter implements INewsDetailPresenter {
     private static class DetailResult extends Result<NewsDetailEntity> {
         private final String mId;
 
-        public DetailResult(String id, Exception exception, NewsDetailEntity result) {
-            super(exception, result);
+        public DetailResult(String id, NewsDetailEntity result) {
+            super(result);
+            this.mId = id;
+        }
+
+        public DetailResult(String id, Exception e) {
+            super(e);
             this.mId = id;
         }
 

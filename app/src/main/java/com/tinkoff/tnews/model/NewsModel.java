@@ -41,8 +41,7 @@ public class NewsModel {
 
     public void setError(Exception error) {
         if(mDataListener != null){
-            mDataListener.onError(error.getMessage());
-
+            mDataListener.onError(error);
         }
     }
 
@@ -52,7 +51,7 @@ public class NewsModel {
 
     public static interface DataListener {
         void onProgressUpdate(boolean progress);
-        void onError(String error);
+        void onError(Exception error);
         void onListUpdate(List<NewsEntity> list);
     }
 }

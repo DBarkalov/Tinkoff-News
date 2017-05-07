@@ -12,5 +12,5 @@ public interface INewsListView {
     void updateList(List<NewsEntity> list);
     void showProgress();
     void hideProgress();
-    void showError(String error);
+    void showError(Exception error);
 }

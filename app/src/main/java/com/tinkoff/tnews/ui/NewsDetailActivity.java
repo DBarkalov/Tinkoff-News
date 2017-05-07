@@ -10,7 +10,6 @@ import com.tinkoff.tnews.NewsApp;
 import com.tinkoff.tnews.R;
 import com.tinkoff.tnews.model.NewsDetailEntity;
 import com.tinkoff.tnews.presenter.INewsDetailPresenter;
-import com.tinkoff.tnews.presenter.NewsDetailPresenter;
 
 public class NewsDetailActivity extends AppCompatActivity implements INewsDetailView, SwipeRefreshLayout.OnRefreshListener {
 
@@ -47,13 +46,13 @@ public class NewsDetailActivity extends AppCompatActivity implements INewsDetail
     }
 
     @Override
-    public void updateText(String id, NewsDetailEntity text) {
+    public void updateText(String id, NewsDetailEntity entity) {
         if (id.equals(getID())) {
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.append("<br><b>");
-            stringBuilder.append(text.getTitle());
+            stringBuilder.append(entity.getTitle());
             stringBuilder.append("</b><br>");
-            stringBuilder.append(text.getContent());
+            stringBuilder.append(entity.getContent());
             mWebView.loadData(stringBuilder.toString(), "text/html; charset=utf-8", "utf-8");
         }
     }
@@ -73,14 +72,14 @@ public class NewsDetailActivity extends AppCompatActivity implements INewsDetail
     }
 
     @Override
-    public void showError(String id, String error) {
+    public void showError(String id, Exception error) {
         if (id.equals(getID())) {
-            Toast.makeText(this, error, Toast.LENGTH_LONG).show();
+            Toast.makeText(this, error.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 
     @Override
     public void onRefresh() {
-        mPresenter.onRefresh(getID(), true);
+        mPresenter.onRefresh(getID());
     }
 }

@@ -53,14 +53,14 @@ public class NewsDetailModel {
 
     public void setError(String key, Exception e) {
         if (mListener != null) {
-            mListener.onError(key, e.getMessage());
+            mListener.onError(key, e);
         }
     }
 
     public static interface DataListener {
         void onProgressUpdate(String key, boolean progress);
 
-        void onError(String key, String error);
+        void onError(String key, Exception e);
 
         void onUpdate(String key, NewsDetailEntity entity);
     }
