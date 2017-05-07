@@ -3,6 +3,7 @@ package com.tinkoff.tnews;
 import android.app.Application;
 
 import com.tinkoff.tnews.data.DataManager;
+import com.tinkoff.tnews.data.IDataManager;
 import com.tinkoff.tnews.model.NewsDetailModel;
 import com.tinkoff.tnews.model.NewsModel;
 import com.tinkoff.tnews.presenter.INewsDetailPresenter;
@@ -17,18 +18,26 @@ import com.tinkoff.tnews.presenter.NewsListPresenter;
 public class NewsApp extends Application {
     private INewsListPresenter mNewsPresenter;
     private INewsDetailPresenter mNewsDetailPresenter;
+    private IDataManager mDataManager;
 
     public INewsListPresenter getNewsPresenter() {
         if (mNewsPresenter == null) {
-            mNewsPresenter = new NewsListPresenter(new NewsModel(), new DataManager(this));
+            mNewsPresenter = new NewsListPresenter(new NewsModel(), getDataManager());
         }
         return mNewsPresenter;
     }
 
     public INewsDetailPresenter getDetailPresenter() {
         if (mNewsDetailPresenter == null) {
-            mNewsDetailPresenter = new NewsDetailPresenter(new NewsDetailModel(), new DataManager(this));
+            mNewsDetailPresenter = new NewsDetailPresenter(new NewsDetailModel(), getDataManager());
         }
         return mNewsDetailPresenter;
+    }
+
+    private IDataManager getDataManager() {
+        if (mDataManager == null) {
+            mDataManager = new DataManager(this);
+        }
+        return mDataManager;
     }
 }
