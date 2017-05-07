@@ -1,12 +1,10 @@
 package com.tinkoff.tnews.presenter;
 
-import android.content.Context;
 import android.os.AsyncTask;
 
-import com.tinkoff.tnews.data.DataManager;
 import com.tinkoff.tnews.data.IDataManager;
-import com.tinkoff.tnews.model.NewsModel;
 import com.tinkoff.tnews.model.NewsEntity;
+import com.tinkoff.tnews.model.NewsModel;
 import com.tinkoff.tnews.ui.INewsListView;
 
 import java.util.List;
@@ -18,10 +16,10 @@ import java.util.List;
 public class NewsListPresenter implements INewsListPresenter {
     private final NewsModel mModel;
     private INewsListView mView;
-    private final Context mContext;
+    private final IDataManager mDataManager;
 
-    public NewsListPresenter(Context context, NewsModel model) {
-        mContext = context;
+    public NewsListPresenter(NewsModel model, IDataManager dataManager) {
+        mDataManager = dataManager;
         mModel = model;
         mModel.setListener(new NewsModel.DataListener() {
             @Override
@@ -87,26 +85,24 @@ public class NewsListPresenter implements INewsListPresenter {
 
     private void startLoadNews(boolean force) {
         mModel.setProgress(true);
-        new LoadTask(mContext, force).execute();
+        new LoadTask(mDataManager, force).execute();
     }
 
 
     private class LoadTask extends AsyncTask<Void, Void, NewsResult> {
-
-        private final Context mContext;
         private final boolean mForce;
+        private final IDataManager mDataManager;
 
-        private LoadTask(Context context, boolean force) {
-            this.mContext = context;
+        private LoadTask(IDataManager dataManager, boolean force) {
+            mDataManager = dataManager;
             this.mForce = force;
         }
 
         @Override
         protected NewsResult doInBackground(Void... params) {
-            IDataManager dataManager = new DataManager(mContext);
             NewsResult result = null;
             try {
-                List<NewsEntity> list = dataManager.getNewstList(mForce);
+                List<NewsEntity> list = mDataManager.getNewstList(mForce);
                 result = new NewsResult(list);
             } catch (Exception e) {
                 result = new NewsResult(e);

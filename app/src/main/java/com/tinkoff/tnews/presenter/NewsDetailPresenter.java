@@ -1,9 +1,7 @@
 package com.tinkoff.tnews.presenter;
 
-import android.content.Context;
 import android.os.AsyncTask;
 
-import com.tinkoff.tnews.data.DataManager;
 import com.tinkoff.tnews.data.IDataManager;
 import com.tinkoff.tnews.model.NewsDetailEntity;
 import com.tinkoff.tnews.model.NewsDetailModel;
@@ -16,11 +14,11 @@ import com.tinkoff.tnews.ui.INewsDetailView;
 public class NewsDetailPresenter implements INewsDetailPresenter {
     private final NewsDetailModel mModel;
     private INewsDetailView mView;
-    private final Context mContext;
+    private final IDataManager mDataManager;
 
-    public NewsDetailPresenter(Context context, NewsDetailModel model) {
-        mContext = context;
+    public NewsDetailPresenter(NewsDetailModel model, IDataManager dataManager) {
         mModel = model;
+        mDataManager = dataManager;
         mModel.setListener(new NewsDetailModel.DataListener() {
             @Override
             public void onProgressUpdate(String id, boolean progress) {
@@ -85,27 +83,26 @@ public class NewsDetailPresenter implements INewsDetailPresenter {
 
     private void startLoadNews(String id, boolean force) {
         mModel.setProgress(id, true);
-        new LoadTask(mContext, force, id).execute();
+        new LoadTask(mDataManager, force, id).execute();
     }
 
     private class LoadTask extends AsyncTask<Void, Void, DetailResult> {
 
-        private final Context mContext;
+        private final IDataManager mDataManager;
         private final boolean mForce;
         private final String mId;
 
-        private LoadTask(Context context, boolean force, String id) {
-            this.mContext = context;
+        private LoadTask(IDataManager dataManager, boolean force, String id) {
+            this.mDataManager = dataManager;
             this.mForce = force;
             this.mId = id;
         }
 
         @Override
         protected DetailResult doInBackground(Void... params) {
-            IDataManager dataManager = new DataManager(mContext);
             DetailResult result = null;
             try {
-                NewsDetailEntity entity = dataManager.getNewsDetail(mId, mForce);
+                NewsDetailEntity entity = mDataManager.getNewsDetail(mId, mForce);
                 result = new DetailResult(mId, entity);
             } catch (Exception e) {
                 result = new DetailResult(mId, e);
